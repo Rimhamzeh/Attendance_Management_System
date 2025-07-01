@@ -18,9 +18,9 @@ function App() {
           <Route 
             path="/adminDashboard" 
             element={
-              <Layout>
+             
                 <AdminDashboard />
-              </Layout>
+              
             }
           >
             <Route index element={<EmployeeTable />} />

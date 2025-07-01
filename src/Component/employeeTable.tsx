@@ -29,7 +29,7 @@ export default function EmployeeTable({
 
   if (isMobile) {
     return (
-      <div className={`divide-y overflow-y-auto flex-grow ${
+      <div className={`divide-y  flex-grow ${
         theme === 'dark' ? 'divide-gray-700' : 'divide-gray-200'
       }`}>
         {filteredEmployees.map((emp) => (
@@ -70,8 +70,8 @@ export default function EmployeeTable({
   }
 
   return (
-    <div className="overflow-hidden flex-grow flex flex-col">
-      <div className="overflow-y-auto flex-grow">
+    <div className=" flex-grow flex flex-col">
+      <div className=" flex-grow">
         <table className={`min-w-full divide-y ${
           theme === 'dark' ? 'divide-gray-700' : 'divide-gray-200'
         }`}>

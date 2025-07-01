@@ -243,10 +243,12 @@ const handleAdd = async () => {
 
   return (
     <div
-      className={`max-w-xl mx-auto p-6 mt-6 rounded-xl shadow-md transition-colors duration-200
-  lg:w-[570px] lg:h-[650px] lg:ml-[300px]
-        ${theme === "dark" ? "bg-gray-800" : "bg-white"}`}
-    >
+  className={`max-w-xl mx-auto p-6 mt-6 rounded-xl shadow-md transition-colors duration-200
+  lg:w-[570px] lg:h-[650px] lg:ml-[300px] overflow-x-hidden
+  ${theme === "dark" ? "bg-gray-800" : "bg-white"}`}
+>
+
+  
       <div className="flex justify-between items-center mb-4">
         <button
           onClick={toggleTheme}

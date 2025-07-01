@@ -114,7 +114,7 @@ function AdminDashboard() {
 
             <button
               onClick={handleLogout}
-              className="flex items-center justify-center w-full bg-white text-indigo-600 hover:bg-gray-100 p-2 rounded focus:outline-none transition"
+              className="flex items-center mb-[200px] justify-center w-full bg-white text-indigo-600 hover:bg-gray-100 p-2 rounded focus:outline-none transition"
             >
               <FiLogOut className="mr-2" />
               Logout

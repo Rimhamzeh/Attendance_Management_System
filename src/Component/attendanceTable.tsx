@@ -76,7 +76,7 @@ export default function AttendanceTable({
   if (isMobile) {
     return (
       <div
-        className={`divide-y overflow-y-auto flex-grow h-full ${
+        className={`divide-y flex-grow h-full ${
           theme === "dark" ? "divide-gray-700" : "divide-gray-200"
         }`}
       >
@@ -204,7 +204,7 @@ export default function AttendanceTable({
 
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="overflow-y-auto flex-grow">
+      <div className=" flex-grow">
         <table
           className={`min-w-full divide-y ${
             theme === "dark" ? "divide-gray-700" : "divide-gray-200"
