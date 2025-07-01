@@ -1,4 +1,4 @@
- import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -107,61 +107,81 @@ export default function AddAttendance() {
     return true;
   };
 
-const handleAdd = async () => {
-  if (!validateTimes()) return;
+  const handleAdd = async () => {
+    if (!validateTimes()) return;
 
-  // Ensure over_time is greater than time_out (if over_time is provided)
-  if (overTime && overTime <= timeOut) {
-    toast.error("Overtime must be greater than time out.");
-    return;
-  }
-
-  setLoading(true);
-  try {
-    const { data: attendanceData, error: attendanceError } = await supabase
-      .from("attendance")
-      .insert([
-        {
-          employee_id: selectedEmployee,
-          date,
-          time_in: timeIn,
-          time_out: timeOut,
-          over_time: overTime || null,
-        },
-      ])
-      .select();
-
-    if (attendanceError) {
-      throw attendanceError;
+    // Ensure over_time is greater than time_out (if over_time is provided)
+    if (overTime && overTime <= timeOut) {
+      toast.error("Overtime must be greater than time out.");
+      return;
     }
 
-    if (breaks.length > 0 && attendanceData?.[0]?.id) {
-      const { error: breaksError } = await supabase.from("breaks").insert(
-        breaks.map((brk) => ({
-          attendance_id: attendanceData[0].id,
-          start_time: brk.start_time,
-          end_time: brk.end_time,
-        }))
-      );
+    setLoading(true);
+    try {
+      // Check if attendance already exists for this employee and date
+      const { data: existingRecords, error: fetchError } = await supabase
+        .from("attendance")
+        .select("id")
+        .eq("employee_id", selectedEmployee)
+        .eq("date", date)
+        .limit(1);
 
-      if (breaksError) {
-        throw breaksError;
+      if (fetchError) {
+        throw fetchError;
       }
-    }
 
-    toast.success("Attendance added successfully!");
-    resetForm();
-  } catch (error: any) {
-    console.error("Error adding attendance:", error);
-    toast.error(error.message || "Failed to add attendance");
-  } finally {
-    setLoading(false);
-  }
-};
+      if (existingRecords && existingRecords.length > 0) {
+        toast.error("Attendance already exists for this employee on this date.");
+        setLoading(false);
+        return;
+      }
+
+      // Insert new attendance record
+      const { data: attendanceData, error: attendanceError } = await supabase
+        .from("attendance")
+        .insert([
+          {
+            employee_id: selectedEmployee,
+            date,
+            time_in: timeIn,
+            time_out: timeOut,
+            over_time: overTime || null,
+          },
+        ])
+        .select();
+
+      if (attendanceError) {
+        throw attendanceError;
+      }
+
+      // Insert breaks if any
+      if (breaks.length > 0 && attendanceData?.[0]?.id) {
+        const { error: breaksError } = await supabase.from("breaks").insert(
+          breaks.map((brk) => ({
+            attendance_id: attendanceData[0].id,
+            start_time: brk.start_time,
+            end_time: brk.end_time,
+          }))
+        );
+
+        if (breaksError) {
+          throw breaksError;
+        }
+      }
+
+      toast.success("Attendance added successfully!");
+      resetForm();
+    } catch (error: any) {
+      console.error("Error adding attendance:", error);
+      toast.error(error.message || "Failed to add attendance");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const resetForm = () => {
     setSelectedEmployee("");
-    setDate(new Date().toISOString().split("T")[0]); 
+    setDate(new Date().toISOString().split("T")[0]);
     setTimeIn("");
     setTimeOut("");
     setOverTime("");
@@ -174,15 +194,12 @@ const handleAdd = async () => {
       toast.warning("Please enter both start and end times for the break");
       return;
     }
-  if(overTime>timeOut){
-  toast.warning(
-        "Please set Over Time greater than Time Out"
-      );
-}
+    if (overTime && overTime <= timeOut) {
+      toast.warning("Please set Over Time greater than Time Out");
+      return;
+    }
     if (!timeIn || !timeOut) {
-      toast.warning(
-        "Please set both Time In and Time Out before adding a break"
-      );
+      toast.warning("Please set both Time In and Time Out before adding a break");
       return;
     }
 
@@ -243,12 +260,10 @@ const handleAdd = async () => {
 
   return (
     <div
-  className={`max-w-xl mx-auto p-6 mt-6 rounded-xl shadow-md transition-colors duration-200
-  lg:w-[570px] lg:h-[650px] lg:ml-[300px] overflow-x-hidden
-  ${theme === "dark" ? "bg-gray-800" : "bg-white"}`}
->
-
-  
+      className={`max-w-xl mx-auto p-6 mt-6 rounded-xl shadow-md transition-colors duration-200
+      lg:w-[570px] lg:h-[650px] lg:ml-[300px] overflow-x-hidden
+      ${theme === "dark" ? "bg-gray-800" : "bg-white"}`}
+    >
       <div className="flex justify-between items-center mb-4">
         <button
           onClick={toggleTheme}
@@ -511,7 +526,6 @@ const handleAdd = async () => {
         </label>
         <input
           type="time"
-          
           className={`w-full border rounded-lg p-2 ${
             theme === "dark"
               ? "bg-gray-700 border-gray-600 text-white"
