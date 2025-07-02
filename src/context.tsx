@@ -1,27 +1,51 @@
-// src/context/ThemeContext.tsx
-import { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 type ThemeContextType = {
   theme: string;
   toggleTheme: () => void;
 };
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+const ThemeContext = createContext<ThemeContextType>({
+  theme: 'light',
+  toggleTheme: () => {},
+});
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState('light');
+export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [isSystemControlled, setIsSystemControlled] = useState(true);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    setTheme(savedTheme);
-    document.documentElement.className = savedTheme;
-  }, []);
+    // Initialize with system preference
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(systemPrefersDark ? 'dark' : 'light');
+    document.documentElement.classList.toggle('dark', systemPrefersDark);
+
+    // Listen for system preference changes (only when in system-controlled mode)
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      if (isSystemControlled) {
+        setTheme(e.matches ? 'dark' : 'light');
+        document.documentElement.classList.toggle('dark', e.matches);
+      }
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, [isSystemControlled]);
 
   const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    document.documentElement.className = newTheme;
+    if (isSystemControlled) {
+      // First click - override system preference to the opposite of current appearance
+      const newTheme = theme === 'dark' ? 'light' : 'dark';
+      setTheme(newTheme);
+      setIsSystemControlled(false);
+      document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    } else {
+      // Subsequent clicks - toggle between light/dark
+      const newTheme = theme === 'light' ? 'dark' : 'light';
+      setTheme(newTheme);
+      document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    }
   };
 
   return (
@@ -29,12 +53,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       {children}
     </ThemeContext.Provider>
   );
-}
+};
 
-export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
-  return context;
-}
+export const useTheme = () => useContext(ThemeContext);
