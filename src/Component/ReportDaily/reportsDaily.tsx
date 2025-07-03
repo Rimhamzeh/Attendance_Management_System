@@ -249,22 +249,7 @@ export default function AttendanceSummaryTable() {
 )}
 
 
-        {isCalendarOpen && (
-          <div className=" mt-[20px]">
-            <Calendar
-            theme={theme}
-            currentMonth={currentMonth}
-            paddedCalendarDays={paddedCalendarDays}
-            onPrevMonth={handlePrevMonth}
-            onNextMonth={handleNextMonth}
-            onDateSelect={handleDateSelect}
-            hasAttendanceData={(day) =>
-              availableDates.some((date) => isSameDay(date, day))
-            }
-            selectedDate={selectedDate}
-          /> </div>
-        )}
-
+       
 
 
        <div className="mr-[50px]">
