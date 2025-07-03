@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { supabase } from "../supabaseClient";
+import { supabase } from "../../Utils/supabaseClient";
 import Swal from "sweetalert2";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useTheme } from "../context";
+import { useTheme } from "../../Utils/context";
 import { Moon, Sun } from "lucide-react";
 export default function AddEmployee() {
   const [first_name, setFirstName] = useState("");
@@ -20,7 +20,7 @@ export default function AddEmployee() {
     setLoading(true);
 
     try {
-      // Check if employee exists
+      
       const { data: existingEmployees, error: selectError } = await supabase
         .from("employee")
         .select("*")
@@ -40,7 +40,7 @@ export default function AddEmployee() {
         return;
       }
 
-      // Insert new employee
+       
       const { data, error } = await supabase
         .from("employee")
         .insert([{ 
@@ -65,7 +65,7 @@ export default function AddEmployee() {
   return (
 <div
   className={`
-  flex flex-col items-center  justify-center min-h-[calc(100vh-80px)] p-4 
+  flex flex-col ml-2 w-[380px]  items-center  justify-center min-h-[calc(100vh-80px)] p-4 
   mt-[-20px] mr-4 
   lg:ml-[350px] lg:w-[500px] lg:h-[500px]
     ${theme === "dark" ? "bg-gray-800" : "bg-white"}`}

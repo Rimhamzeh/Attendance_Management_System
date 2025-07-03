@@ -1,14 +1,14 @@
-import type { Employee } from "../interfaces";
+import type { Employee } from "../../../Utils/interfaces";
 import { MdDelete } from "react-icons/md";
-import { Moon, Sun } from "lucide-react";
-import { useTheme } from "../context";
+
+import { useTheme } from "../../../Utils/context";
 
 interface EmployeeTableProps {
   employees: Employee[];
   searchQuery: string;
   isMobile: boolean;
   onDelete: (id: string) => void;
-  theme?: string; // Optional theme prop for consistency
+  theme?: string; 
 }
 
 export default function EmployeeTable({

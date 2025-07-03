@@ -9,12 +9,26 @@ export interface AttendanceBreak {
   end: string;
 }
 export interface AttendanceRecord {
+  employee: any;
   id: string;
   employee_id: string;
   date: string;
   time_in: string | null;
   time_out: string | null;
   over_time:string | null;
+}
+export interface DailyGrouped {
+  date: string;
+  records: {
+    employeeName: string;
+    regularHours: number;
+    overtimeHours: number;
+    totalHours: number;
+    extraTimeWorked: number;
+    time_in: string | null;
+    time_out: string | null;
+    over_time: string | null;
+  }[];
 }
 
 export interface AttendanceWithEmployee extends AttendanceRecord {

@@ -21,13 +21,13 @@ function AdminDashboard() {
       }
     };
 
-    // Set initial state
+
     handleResize();
 
-    // Add event listener
+
     window.addEventListener('resize', handleResize);
 
-    // Clean up
+ 
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
@@ -65,13 +65,13 @@ function AdminDashboard() {
         {isSidebarOpen && (
           <>
             <div>
-              <div className="flex justify-between items-center mb-6">
-             <h1 className="text-2xl font-bold mb-6">Admin Panel</h1>
+              <div className="flex justify-between items-center  mb-6">
+             <h1 className="text-2xl ml-[30px] font-bold mb-2 mt-[10px]">Admin Panel</h1>
               </div>
-              <nav className="space-y-4">
+              <nav className="space-y-8">
                 <Link 
                   to="/adminDashboard" 
-                  className="flex items-center text-white hover:bg-indigo-700 p-2 rounded transition"
+                  className="flex text-lg items-center  text-white hover:bg-indigo-700 p-2 rounded transition"
                   onClick={() => isMobile && setIsSidebarOpen(false)}
                 >
                   <FaHome className="mr-2" />
@@ -79,7 +79,7 @@ function AdminDashboard() {
                 </Link>
                 <Link 
                   to="/adminDashboard/addEmployee" 
-                  className="flex items-center text-white hover:bg-indigo-700 p-2 rounded transition"
+                  className="flex text-lg items-center text-white hover:bg-indigo-700 p-2 rounded transition"
                   onClick={() => isMobile && setIsSidebarOpen(false)}
                 >
                   <IoAddCircleSharp className="mr-2" />
@@ -87,7 +87,7 @@ function AdminDashboard() {
                 </Link>
                 <Link 
                   to="/adminDashboard/addAttendance" 
-                  className="flex items-center text-white hover:bg-indigo-700 p-2 rounded transition"
+                  className="flex text-lg items-center text-white hover:bg-indigo-700 p-2 rounded transition"
                   onClick={() => isMobile && setIsSidebarOpen(false)}
                 >
                   <IoAddCircleSharp className="mr-2" />
@@ -95,7 +95,7 @@ function AdminDashboard() {
                 </Link>
                 <Link 
                   to="/adminDashboard/reportDate" 
-                  className="flex items-center text-white hover:bg-indigo-700 p-2 rounded transition"
+                  className="flex text-lg items-center text-white hover:bg-indigo-700 p-2 rounded transition"
                   onClick={() => isMobile && setIsSidebarOpen(false)}
                 >
                   <TbReportAnalytics className="mr-2" />
@@ -103,7 +103,7 @@ function AdminDashboard() {
                 </Link>
                 <Link 
                   to="/adminDashboard/reportMonthly" 
-                  className="flex items-center text-white hover:bg-indigo-700 p-2 rounded transition"
+                  className="flex text-lg items-center text-white hover:bg-indigo-700 p-2 rounded transition"
                   onClick={() => isMobile && setIsSidebarOpen(false)}
                 >
                   <TbReportAnalytics className="mr-2" />
@@ -127,7 +127,7 @@ function AdminDashboard() {
   className={`flex-1 p h-full  transition-all duration-300
     ${isSidebarOpen && !isMobile ? 'ml-64' : 'ml-0'}
     ${isMobile ? 'mt-16' : 'mt-0'}
-    w-full`}  // Ensure full width
+    w-full`}  
 >
   <Outlet />
 </main>

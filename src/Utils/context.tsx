@@ -15,12 +15,11 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [isSystemControlled, setIsSystemControlled] = useState(true);
 
   useEffect(() => {
-    // Initialize with system preference
+
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     setTheme(systemPrefersDark ? 'dark' : 'light');
     document.documentElement.classList.toggle('dark', systemPrefersDark);
 
-    // Listen for system preference changes (only when in system-controlled mode)
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = (e: MediaQueryListEvent) => {
       if (isSystemControlled) {
@@ -35,13 +34,13 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   const toggleTheme = () => {
     if (isSystemControlled) {
-      // First click - override system preference to the opposite of current appearance
+   
       const newTheme = theme === 'dark' ? 'light' : 'dark';
       setTheme(newTheme);
       setIsSystemControlled(false);
       document.documentElement.classList.toggle('dark', newTheme === 'dark');
     } else {
-      // Subsequent clicks - toggle between light/dark
+    
       const newTheme = theme === 'light' ? 'dark' : 'light';
       setTheme(newTheme);
       document.documentElement.classList.toggle('dark', newTheme === 'dark');

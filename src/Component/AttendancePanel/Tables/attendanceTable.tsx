@@ -1,11 +1,11 @@
-import type { AttendanceWithEmployee, Break } from "../interfaces";
+import type { AttendanceWithEmployee, Break } from "../../../Utils/interfaces";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { Moon, Sun } from "lucide-react";
-import { useTheme } from "../context";
+import { useTheme } from "../../../Utils/context";
 import { IoCloseSharp } from "react-icons/io5";
 import { useState } from "react";
-import { supabase } from "../supabaseClient";
+import { supabase } from "../../../Utils/supabaseClient";
 
 interface AttendanceTableProps {
   records: AttendanceWithEmployee[];
@@ -25,7 +25,7 @@ export default function AttendanceTable({
   todayDate,
   onDelete,
   onEdit,
-  onDeleteBreak = () => {}, // default noop
+  onDeleteBreak = () => {},
   theme: propTheme,
 }: AttendanceTableProps) {
   const [breaks, setBreaks] = useState<Break[]>([]);
@@ -50,7 +50,7 @@ export default function AttendanceTable({
 
   async function handleDeleteAttendance(attendanceId: string) {
     try {
-      // Delete all breaks related to this attendance record first
+
       const { error: breaksError } = await supabase
         .from("breaks")
         .delete()
@@ -58,7 +58,7 @@ export default function AttendanceTable({
 
       if (breaksError) throw breaksError;
 
-      // Then delete the attendance record
+      
       const { error: attendanceError } = await supabase
         .from("attendance")
         .delete()
@@ -66,7 +66,7 @@ export default function AttendanceTable({
 
       if (attendanceError) throw attendanceError;
 
-      // Notify parent that delete succeeded, so it can update UI
+      
       onDelete(attendanceId);
     } catch (error: any) {
       alert("Error deleting record: " + error.message);
@@ -97,17 +97,6 @@ export default function AttendanceTable({
                   <h3 className="font-medium">{rec.employeeName}</h3>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <button
-                    onClick={toggleTheme}
-                    className="p-1 rounded-full"
-                    aria-label="Toggle theme"
-                  >
-                    {theme === "dark" ? (
-                      <Sun className="w-4 h-4 text-yellow-300" />
-                    ) : (
-                      <Moon className="w-4 h-4 text-gray-700" />
-                    )}
-                  </button>
                   <div className="flex space-x-2">
                     <button
                       onClick={() => onEdit(rec)}
