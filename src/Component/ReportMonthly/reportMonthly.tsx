@@ -191,8 +191,8 @@ setAttendance(nonEmptyData);
       
              </div>
               
-              <h2 className="flex items-center  text-xl  md:text-2xl font-bold text-center">
-                <FaCalendarDays className="ml-[30px]" />
+              <h2 className="flex items-center mr-[50px] text-xl  md:text-2xl font-bold text-center">
+                <FaCalendarDays className="ml-[50px]" />
                  Monthly Attendance Report
               
               </h2>

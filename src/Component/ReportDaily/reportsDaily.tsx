@@ -186,8 +186,8 @@ export default function AttendanceSummaryTable() {
 
        </div>
         
-        <h2 className="flex items-center  text-xl  md:text-2xl font-bold text-center">
-          <FaCalendarDays className="mr-[10px]" />
+        <h2 className="flex items-center mr-[50px]  text-xl  md:text-2xl font-bold text-center">
+          <FaCalendarDays className="mr-[50px]" />
            Daily Attendance Report
         
         </h2>
