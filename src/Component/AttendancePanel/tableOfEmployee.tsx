@@ -36,7 +36,7 @@ export default function EmployeePage() {
   if (loading) return <LoadingSpinner theme={theme} />;
 
  return (
-    <div className={`w-full flex flex-col flex-grow min-h-0 px-4 sm:px-6 lg:w-[1310px] lg:px-8 py-4 overflow-x-hidden
+    <div className={`w-full flex flex-col flex-grow min-h-0 px-4 sm:px-6 lg:w-[1300px] lg:px-8 py-4 overflow-x-hidden
       ${theme === "dark" ? "bg-gray-900" : "bg-gray-50"} transition-colors duration-200`}>
         <div>
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
