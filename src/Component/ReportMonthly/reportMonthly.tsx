@@ -181,7 +181,7 @@ setAttendance(nonEmptyData);
 
   return (
     <div
-      className={`mx-auto w-[400px] lg:w-[1270px] p-4 min-h-screen ${
+      className={`mx-auto w-[400px] lg:w-[1280px] p-4 min-h-screen ${
         theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-white text-gray-800"
       }`}
     >
@@ -191,8 +191,8 @@ setAttendance(nonEmptyData);
       
              </div>
               
-              <h2 className="flex items-center mr-[100px] text-xl  md:text-2xl font-bold text-center">
-                <FaCalendarDays className="mr-[100px]" />
+              <h2 className="flex items-center  text-xl  md:text-2xl font-bold text-center">
+                <FaCalendarDays className="mr-[10px]" />
                  Monthly Attendance Report
               
               </h2>

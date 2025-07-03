@@ -173,7 +173,7 @@ export default function AttendanceSummaryTable() {
 
   return (
     <div
-      className={`mx-auto w-[390px] lg:w-[1277px] p-2 md:p-4 rounded-lg shadow transition-colors duration-200 border ${
+      className={`mx-auto w-[390px] lg:w-[1278px] p-2 md:p-4 rounded-lg shadow transition-colors duration-200 border ${
         theme === "dark"
           ? "bg-gray-900 border-gray-700 text-gray-100"
           : "bg-white border-gray-200 text-gray-800"
@@ -186,8 +186,8 @@ export default function AttendanceSummaryTable() {
 
        </div>
         
-        <h2 className="flex items-center mr-[100px] text-xl ml-[50px] md:text-2xl font-bold text-center">
-          <FaCalendarDays className="mr-[100px]" />
+        <h2 className="flex items-center  text-xl ml-[50px] md:text-2xl font-bold text-center">
+          <FaCalendarDays className="mr-[10px]" />
            Daily Attendance Report
         
         </h2>
