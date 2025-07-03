@@ -173,11 +173,7 @@ export default function AttendanceSummaryTable() {
 
   return (
     <div
-<<<<<<< HEAD
-      className={`mx-auto w-[390px] lg:w-[1150px] p-2 md:p-4 rounded-lg shadow transition-colors duration-200 border ${
-=======
-      className={`mx-auto w-[390px] lg:w-[1120px] p-2 md:p-4 rounded-lg shadow transition-colors duration-200 border ${
->>>>>>> 10ffa3b987dbdb37dd53a2d03f61be79da65d1b2
+      className={`mx-auto w-[390px] lg:w-[1170px] p-2 md:p-4 rounded-lg shadow transition-colors duration-200 border ${
         theme === "dark"
           ? "bg-gray-900 border-gray-700 text-gray-100"
           : "bg-white border-gray-200 text-gray-800"
