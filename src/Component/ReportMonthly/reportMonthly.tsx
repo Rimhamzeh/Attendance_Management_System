@@ -191,8 +191,8 @@ setAttendance(nonEmptyData);
       
              </div>
               
-              <h2 className="flex items-center text-xl ml-[50px] md:text-2xl font-bold text-center">
-                <FaCalendarDays className="mr-[10px]" />
+              <h2 className="flex items-center mr-[100px] text-xl  md:text-2xl font-bold text-center">
+                <FaCalendarDays className="mr-[100px]" />
                  Monthly Attendance Report
               
               </h2>
@@ -206,10 +206,14 @@ setAttendance(nonEmptyData);
           onIncrementMonth={(inc) => setSelectedMonth(addMonths(selectedMonth, inc))}
           theme={theme}
         />
-        <SearchBar theme={theme}
+        <div  className="mr-[50px]">
+          <SearchBar
+         theme={theme}
           value={searchTerm}
           onChange={setSearchTerm}
           placeholder="Search employee..."/>
+        </div>
+       
       </div>
 
       <div

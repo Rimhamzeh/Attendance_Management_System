@@ -180,14 +180,14 @@ export default function AttendanceSummaryTable() {
       }`}
     >
    <div className="flex flex-col items-center mt-5 mb-[20px]">
-        <div className="flex items-center mb-[20px] justify-center w-full relative mb-3">
+        <div className="flex items-center mb-[20px]  justify-center w-full relative mb-3">
        <div className="p-2 rounded-full absolute left-0">
          <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
 
        </div>
         
-        <h2 className="flex items-center text-xl ml-[50px] md:text-2xl font-bold text-center">
-          <FaCalendarDays className="mr-[10px]" />
+        <h2 className="flex items-center mr-[100px] text-xl ml-[50px] md:text-2xl font-bold text-center">
+          <FaCalendarDays className="mr-[100px]" />
            Daily Attendance Report
         
         </h2>
@@ -267,12 +267,14 @@ export default function AttendanceSummaryTable() {
 
 
 
-        <SearchInput
+       <div className="mr-[50px]">
+         <SearchInput
           theme={theme}
           value={searchTerm}
           onChange={setSearchTerm}
           placeholder="Search employee..."
         />
+       </div>
 
       </div>
 
