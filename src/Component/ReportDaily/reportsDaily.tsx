@@ -204,6 +204,15 @@ export default function AttendanceSummaryTable() {
     [groupedData, searchTerm]
   );
 
+  // Group records by employee and sum total hours for the selected day
+  const employeeMonthlyTotals: Record<string, number> = {};
+  filteredRecords.forEach((rec) => {
+    if (!employeeMonthlyTotals[rec.employeeName]) {
+      employeeMonthlyTotals[rec.employeeName] = 0;
+    }
+    employeeMonthlyTotals[rec.employeeName] += rec.totalHours;
+  });
+
   const handlePrevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
   const handleNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
   const handleDateSelect = (day: Date) => {
@@ -215,7 +224,7 @@ export default function AttendanceSummaryTable() {
 
   return (
     <div
-      className={`ml-[20px]   md:p-4-auto w-[390px] lg:w-[1230px] rounded-lg shadow transition-colors duration-200 border${
+      className={`lg:ml-[20px]    md:p-4-auto w-[390px] lg:w-[1230px] rounded-lg shadow transition-colors duration-200 border${
         theme === "dark"
           ? "bg-gray-900 border-gray-700 text-gray-100"
           : "bg-white border-gray-200 text-gray-800"

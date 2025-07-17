@@ -12,6 +12,7 @@ import ThemeToggle from "../../shared/ThemeToggle";
 import { FaCalendarDays } from "react-icons/fa6";
 import { calculateTotalBreakMinutes } from "../../Utils/timeHelper";
 import { calculateHours } from "../../Utils/reportHelper";
+import AttendanceMiniTableMobile from "../ReportDaily/attendanceMiniTableMobile";
 
 interface AttendanceRecord {
   id: string;
@@ -177,7 +178,7 @@ export default function MonthlyAttendanceReport() {
 
   return (
     <div
-      className={`mx-auto w-[400px] lg:w-[1230px] lg:ml-[20px]  p-4 min-h-screen ${
+      className={`mx-auto  lg:w-[1230px] lg:ml-[20px]  p-4 min-h-screen ${
         theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-white text-gray-800"
       }`}
     >
@@ -235,12 +236,17 @@ export default function MonthlyAttendanceReport() {
           </p>
         ) : (
           <>
-            <AttendanceTable
-              records={filteredRecords}
-              theme={theme}
-              employeeMonthlyTotals={employeeMonthlyTotals}
-            />
-            <AttendanceListMobile records={filteredRecords} theme={theme} />
+            <div className="hidden md:block">
+              <AttendanceTable
+                records={filteredRecords}
+                theme={theme}
+                employeeMonthlyTotals={employeeMonthlyTotals}
+              />
+            </div>
+            <div className="block md:hidden">
+              <AttendanceMiniTableMobile employeeMonthlyTotals={employeeMonthlyTotals} theme={theme} />
+              <AttendanceListMobile records={filteredRecords} theme={theme} />
+            </div>
           </>
         )}
       </div>
