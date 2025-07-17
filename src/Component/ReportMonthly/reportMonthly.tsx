@@ -177,7 +177,7 @@ export default function MonthlyAttendanceReport() {
 
   return (
     <div
-      className={`mx-auto w-[400px] lg:w-[1280px] p-4 min-h-screen ${
+      className={`mx-auto w-[400px] lg:w-[1220px] p-4 min-h-screen ${
         theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-white text-gray-800"
       }`}
     >
