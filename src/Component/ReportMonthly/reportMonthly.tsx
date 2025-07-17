@@ -177,11 +177,11 @@ export default function MonthlyAttendanceReport() {
 
   return (
     <div
-      className={`mx-auto w-[400px] lg:w-[1280px] p-4 min-h-screen ${
+      className={`mx-auto w-[400px] lg:w-[1230px] p-4 min-h-screen ${
         theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-white text-gray-800"
       }`}
     >
-        <div className="flex items-center mb-[20px] justify-center w-full relative mb-3">
+        <div className="flex items-center mb-[20px] justify-center w-full relative ">
              <div className="p-2 rounded-full absolute left-0">
                <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       

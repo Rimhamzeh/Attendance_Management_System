@@ -215,7 +215,7 @@ export default function AttendanceSummaryTable() {
 
   return (
     <div
-      className={`ml-[20px]   md:p-4-auto w-[390px] lg:w-[1400px] rounded-lg shadow transition-colors duration-200 border${
+      className={`ml-[20px]   md:p-4-auto w-[390px] lg:w-[1200px] rounded-lg shadow transition-colors duration-200 border${
         theme === "dark"
           ? "bg-gray-900 border-gray-700 text-gray-100"
           : "bg-white border-gray-200 text-gray-800"
