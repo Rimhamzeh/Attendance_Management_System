@@ -89,12 +89,12 @@ export default function BreaksSection({
   const labelClass = theme === "dark" ? "text-gray-300" : "text-gray-700";
 
   return (
-    <div className="mb-4">
-      <div className="flex justify-between items-center mb-2">
+    <div className="mb-4 overflow-x-hidden">
+      <div className="flex justify-between items-center ">
         <label className={labelClass}>Breaks</label>
         <button
           type="button"
-          className="text-sm px-3 py-1 rounded bg-indigo-600 hover:bg-indigo-700 text-white"
+          className="text-sm px-3 py-1 rounded bg-indigo-600 hover:bg-indigo-700 text-white overflow-x-hidden"
           onClick={() => setIsAddingBreak(true)}
           disabled={loading}
         >

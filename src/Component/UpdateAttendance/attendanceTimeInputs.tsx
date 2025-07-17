@@ -27,14 +27,14 @@ export default function AttendanceTimeInputs({
 
   return (
     <>
-      {(["time_in", "time_out", "over_time"] as const).map((field) => (
+      {(["time_in", "time_out", ] as const).map((field) => (
         <div key={field}>
           <label className={labelClass}>
             {field === "time_in"
               ? "Time In"
               : field === "time_out"
               ? "Time Out"
-              : "Overtime"}
+              : "-"}
           </label>
           <div className="relative flex items-center">
             <input

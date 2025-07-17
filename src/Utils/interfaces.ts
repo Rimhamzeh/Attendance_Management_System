@@ -16,6 +16,8 @@ export interface AttendanceRecord {
   time_in: string | null;
   time_out: string | null;
   over_time:string | null;
+    breaks?: Break[];
+    
 }
 export interface DailyGrouped {
   date: string;
@@ -24,10 +26,11 @@ export interface DailyGrouped {
     regularHours: number;
     overtimeHours: number;
     totalHours: number;
-    extraTimeWorked: number;
+    totalHoursWorked: number;
     time_in: string | null;
     time_out: string | null;
     over_time: string | null;
+    breaks?: Break[];
   }[];
 }
 

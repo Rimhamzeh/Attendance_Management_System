@@ -9,7 +9,7 @@ import EmployeeSelect from "./DropDownEmployee/employeeSelect";
 import DateInput from "./Inputs/dateInput";
 import TimeInputGroup from "./Inputs/timeInputGroup";
 import BreaksSection from "./BreakSection/breaksSection";
-import OvertimeInput from "./Inputs/overtimeInput";
+// import OvertimeInput from "./Inputs/overtimeInput";
 import SubmitButton from "./SubmitButton/submitButton";
 import { validateTimes } from "../../Utils/attendanceValidation";
 import type { Employee, Break } from "../../Utils/interfaces";
@@ -169,7 +169,7 @@ export default function AddAttendance() {
         theme={theme}
       />
 
-      <BreaksSection
+      <BreaksSection 
         breaks={breaks}
         setBreaks={setBreaks}
         timeIn={timeIn}
@@ -178,12 +178,12 @@ export default function AddAttendance() {
         theme={theme}
       />
 
-      <OvertimeInput
+      {/* <OvertimeInput
         overTime={overTime}
         setOverTime={setOverTime}
         loading={loading}
         theme={theme}
-      />
+      /> */}
 
       <SubmitButton loading={loading} onClick={handleSubmit} theme={theme} />
     </form>

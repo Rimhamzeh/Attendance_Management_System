@@ -1,13 +1,17 @@
 import type { AttendanceWithEmployee, Break } from "../../../Utils/interfaces";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { Moon, Sun } from "lucide-react";
 import { useTheme } from "../../../Utils/context";
 import { IoCloseSharp } from "react-icons/io5";
 import { useState } from "react";
 import { supabase } from "../../../Utils/supabaseClient";
+import {
+  calculateTotalBreakMinutes,
+  formatMinutesToTime,
+} from "../../../Utils/timeHelper";
+import { calculateHours } from "../../../Utils/reportHelper";
 
-interface AttendanceTableProps {
+ export interface AttendanceTableProps {
   records: AttendanceWithEmployee[];
   searchQuery: string;
   isMobile: boolean;
@@ -50,7 +54,6 @@ export default function AttendanceTable({
 
   async function handleDeleteAttendance(attendanceId: string) {
     try {
-
       const { error: breaksError } = await supabase
         .from("breaks")
         .delete()
@@ -58,7 +61,6 @@ export default function AttendanceTable({
 
       if (breaksError) throw breaksError;
 
-      
       const { error: attendanceError } = await supabase
         .from("attendance")
         .delete()
@@ -66,7 +68,6 @@ export default function AttendanceTable({
 
       if (attendanceError) throw attendanceError;
 
-      
       onDelete(attendanceId);
     } catch (error: any) {
       alert("Error deleting record: " + error.message);
@@ -127,7 +128,9 @@ export default function AttendanceTable({
               <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
                 <div>
                   <p
-                    className={theme === "dark" ? "text-gray-400" : "text-gray-500"}
+                    className={
+                      theme === "dark" ? "text-gray-400" : "text-gray-500"
+                    }
                   >
                     In Time
                   </p>
@@ -135,7 +138,9 @@ export default function AttendanceTable({
                 </div>
                 <div>
                   <p
-                    className={theme === "dark" ? "text-gray-400" : "text-gray-500"}
+                    className={
+                      theme === "dark" ? "text-gray-400" : "text-gray-500"
+                    }
                   >
                     Out Time
                   </p>
@@ -143,7 +148,9 @@ export default function AttendanceTable({
                 </div>
                 <div>
                   <p
-                    className={theme === "dark" ? "text-gray-400" : "text-gray-500"}
+                    className={
+                      theme === "dark" ? "text-gray-400" : "text-gray-500"
+                    }
                   >
                     Overtime
                   </p>
@@ -151,7 +158,9 @@ export default function AttendanceTable({
                 </div>
                 <div className="col-span-2">
                   <p
-                    className={theme === "dark" ? "text-gray-400" : "text-gray-500"}
+                    className={
+                      theme === "dark" ? "text-gray-400" : "text-gray-500"
+                    }
                   >
                     Breaks
                   </p>
@@ -241,6 +250,13 @@ export default function AttendanceTable({
                 Breaks
               </th>
               <th
+                className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider w-1/5 ${
+                  theme === "dark" ? "text-gray-300" : "text-gray-500"
+                }`}
+              >
+                Total Breaks
+              </th>
+              <th
                 className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider w-1/6 ${
                   theme === "dark" ? "text-gray-300" : "text-gray-500"
                 }`}
@@ -252,7 +268,7 @@ export default function AttendanceTable({
             </tr>
           </thead>
           <tbody
-            className={`divide-y ${
+            className={`divide-y  ${
               theme === "dark"
                 ? "divide-gray-700 bg-gray-800"
                 : "divide-gray-200 bg-white"
@@ -260,10 +276,7 @@ export default function AttendanceTable({
           >
             {uniqueRecords.length === 0 ? (
               <tr>
-                <td
-                  colSpan={6}
-                  className="text-center py-4 text-gray-500"
-                >
+                <td colSpan={6} className="text-center py-4 text-gray-500">
                   No attendance records yet for today. Please add attendance.
                 </td>
               </tr>
@@ -276,7 +289,7 @@ export default function AttendanceTable({
                   }
                 >
                   <td
-                    className={`px-6 py-4 text-sm font-medium w-1/5 ${
+                    className={`  px-6 py-4 text-sm font-medium w-1/5 ${
                       theme === "dark" ? "text-white" : "text-gray-900"
                     }`}
                   >
@@ -301,7 +314,30 @@ export default function AttendanceTable({
                       theme === "dark" ? "text-gray-200" : "text-gray-500"
                     }`}
                   >
-                    {rec.over_time || "—"}
+                    <td
+                      className={ ` px-6 py-4 text-sm w-1/6 ${
+                        theme === "dark" ? "text-gray-200" : "text-gray-500"
+                      }`}
+                    >
+                      {rec.time_in && rec.time_out
+                        ? (() => {
+                            const totalBreaks = calculateTotalBreakMinutes(
+                              rec.breaks || []
+                            );
+                            const { overtimeHours } = calculateHours(
+                              rec.date,
+                              rec.time_in,
+                              rec.time_out,
+                              totalBreaks
+                            );
+                            return overtimeHours > 0
+                              ? `${Math.floor(overtimeHours)}h${String(
+                                  Math.round((overtimeHours % 1) * 60)
+                                ).padStart(2, "0")}m`
+                              : "0h00m";
+                          })()
+                        : "—"}
+                    </td>
                   </td>
                   <td
                     className={`px-6 py-4 text-sm w-1/5 ${
@@ -335,6 +371,17 @@ export default function AttendanceTable({
                     ) : (
                       "—"
                     )}
+                  </td>
+                  <td
+                    className={`px-6 py-4 text-sm w-1/6 ${
+                      theme === "dark" ? "text-gray-200" : "text-gray-500"
+                    }`}
+                  >
+                    {rec.breaks?.length
+                      ? formatMinutesToTime(
+                          calculateTotalBreakMinutes(rec.breaks)
+                        )
+                      : "—"}
                   </td>
                   <td className="px-6 py-4 text-sm font-medium w-1/6">
                     <div className="flex space-x-4">

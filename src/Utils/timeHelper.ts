@@ -38,3 +38,18 @@ export function isOverlap(
     return startM < brEndM && endM > brStartM;
   });
 }
+export function calculateTotalBreakMinutes(breaks: Break[]) {
+  return breaks.reduce((total, br) => {
+    const start = toMinutes(br.start_time);
+    const end = toMinutes(br.end_time);
+    if (end > start) {
+      return total + (end - start);
+    }
+    return total;
+  }, 0);
+}
+export function formatMinutesToTime(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return `${h}h${m.toString().padStart(2, "0")}m`;
+}

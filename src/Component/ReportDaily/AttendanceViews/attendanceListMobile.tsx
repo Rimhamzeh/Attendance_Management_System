@@ -1,4 +1,15 @@
 import React from "react";
+import {
+  calculateTotalBreakMinutes,
+  formatMinutesToTime,
+} from "../../../Utils/timeHelper";
+
+interface Break {
+  id: string;
+  start_time: string;
+  end_time: string;
+  attendance_id?: string;
+}
 
 interface Record {
   employeeName: string;
@@ -8,6 +19,7 @@ interface Record {
   regularHours: number;
   overtimeHours: number;
   totalHours: number;
+  breaks?: Break[];
 }
 
 interface Props {
@@ -19,64 +31,107 @@ interface Props {
 export function AttendanceListMobile({ theme, records, formatHours }: Props) {
   return (
     <div className="md:hidden w-full space-y-3">
-      {records.map((rec, idx) => (
-        <div
-          key={`${rec.employeeName}-${idx}`}
-          className={`p-3 rounded-lg ${
-            theme === "dark" ? "bg-gray-800 border-gray-700" : "bg-white border border-gray-200"
-          }`}
-        >
-          <div className={`font-medium mb-2 ${theme === "dark" ? "text-white" : "text-gray-800"}`}>
-            {rec.employeeName}
-          </div>
+      {records.map((rec, idx) => {
+        const totalBreaks = rec.breaks?.length
+          ? calculateTotalBreakMinutes(rec.breaks)
+          : 0;
 
-          <div className="flex justify-between mb-2">
-            <div className="space-y-1">
+        return (
+          <div
+            key={`${rec.employeeName}-${idx}`}
+            className={`p-3 rounded-lg ${
+              theme === "dark"
+                ? "bg-gray-800 border-gray-700"
+                : "bg-white border border-gray-200"
+            }`}
+          >
+            <div
+              className={`font-medium mb-2 ${
+                theme === "dark" ? "text-white" : "text-gray-800"
+              }`}
+            >
+              {rec.employeeName}
+            </div>
+
+            <div className="space-y-1 mb-2">
               {[
                 { label: "Time In", value: rec.time_in },
                 { label: "Time Out", value: rec.time_out },
-                { label: "OverTime", value: rec.over_time },
+                { label: "Overtime", value: rec.over_time },
               ].map(({ label, value }) => (
                 <div className="text-sm" key={label}>
-                  <span className={theme === "dark" ? "text-gray-400" : "text-gray-500"}>
+                  <span
+                    className={theme === "dark" ? "text-gray-400" : "text-gray-500"}
+                  >
                     {label}:
                   </span>{" "}
-                  <span className={theme === "dark" ? "text-gray-300" : "text-gray-700"}>
+                  <span
+                    className={theme === "dark" ? "text-gray-300" : "text-gray-700"}
+                  >
                     {value || "—"}
                   </span>
                 </div>
               ))}
             </div>
 
-            <div className="space-y-1 text-right">
-              {[
-                { label: "Regular", value: formatHours(rec.regularHours) },
-                { label: "Overtime", value: formatHours(rec.overtimeHours) },
-              ].map(({ label, value }) => (
-                <div className="text-sm" key={label}>
+            {rec.breaks?.length ? (
+              <div className="text-sm mb-2">
+                <div
+                  className={`font-semibold ${
+                    theme === "dark" ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
+                  Breaks:
+                </div>
+                <ul className="pl-4 list-disc">
+                  {rec.breaks.map((br) => (
+                    <li key={br.id} className="text-xs">
+                      {br.start_time} - {br.end_time}
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-1">
                   <span className={theme === "dark" ? "text-gray-400" : "text-gray-500"}>
-                    {label}:
+                    Total Breaks:
                   </span>{" "}
                   <span className={theme === "dark" ? "text-gray-300" : "text-gray-700"}>
-                    {value}
+                    {formatMinutesToTime(totalBreaks)}
                   </span>
                 </div>
-              ))}
-            </div>
-          </div>
+              </div>
+            ) : (
+              <div className="text-sm text-gray-500 mb-2">No breaks</div>
+            )}
 
-          <div className="flex justify-center mt-2">
-            <div
-              className={`px-3 py-1 rounded-lg ${
-                theme === "dark" ? "bg-gray-700 text-gray-200" : "bg-gray-100 text-gray-800"
-              }`}
-            >
-              <span className="font-medium">Total: </span>
-              {formatHours(rec.totalHours)}
+            <div className="flex justify-between text-sm">
+              <div>
+                <span className={theme === "dark" ? "text-gray-400" : "text-gray-500"}>
+                  Regular:
+                </span>{" "}
+                <span className={theme === "dark" ? "text-gray-300" : "text-gray-700"}>
+                  {formatHours(rec.regularHours)}
+                </span>
+              </div>
+              <div>
+                <span className={theme === "dark" ? "text-gray-400" : "text-gray-500"}>
+                  Overtime:
+                </span>{" "}
+                <span className={theme === "dark" ? "text-gray-300" : "text-gray-700"}>
+                  {formatHours(rec.overtimeHours)}
+                </span>
+              </div>
+              <div>
+                <span className={theme === "dark" ? "text-gray-400" : "text-gray-500"}>
+                  Total:
+                </span>{" "}
+                <span className={theme === "dark" ? "text-gray-300" : "text-gray-700"}>
+                  {formatHours(rec.totalHours)}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
