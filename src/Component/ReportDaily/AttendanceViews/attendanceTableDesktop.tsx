@@ -34,7 +34,7 @@ interface Props {
 
 export function AttendanceTableDesktop({ theme, records, formatHours }: Props) {
   return (
-    <div className="hidden md:block overflow-x-auto">
+    <div className="hidden md:block">
       <table
         className={`w-full border-collapse ${
           theme === "dark" ? "border-gray-700" : "border-gray-300"

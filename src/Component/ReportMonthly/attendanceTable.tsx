@@ -38,7 +38,7 @@ export default function AttendanceTable({ records, theme, employeeMonthlyTotals 
           </table>
         </div>
       )}
-      <table className="hidden md:table w-full border-collapse">
+      <table className="w-full border-collapse">
         <thead className={`${theme === "dark" ? "bg-gray-700" : "bg-gray-200"}`}>
           <tr>
             {["Date", "Employee", "Time In", "Time Out", "Regular", "Overtime", "Total"].map((header) => (
