@@ -38,44 +38,50 @@ export default function AttendanceListMobile({ records, theme }: AttendanceListM
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
-            <div>
-              <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
-                Time In
-              </p>
-              <p className={`font-medium ${theme === "dark" ? "text-white" : "text-gray-800"}`}>
-                {rec.time_in}
-              </p>
-            </div>
-            <div>
-              <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
-                Time Out
-              </p>
-              <p className={`font-medium ${theme === "dark" ? "text-white" : "text-gray-800"}`}>
-                {rec.time_out}
-              </p>
-            </div>
-            <div>
-              <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
-                Regular
-              </p>
-              <p className={theme === "dark" ? "text-white" : "text-gray-800"}>{rec.regular}h</p>
-            </div>
-            <div>
-              <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
-                Overtime
-              </p>
-              <p className={theme === "dark" ? "text-white" : "text-gray-800"}>{rec.overtime}h</p>
-            </div>
-            <div>
-              <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
-                Total
-              </p>
-              <p className={`font-medium ${theme === "dark" ? "text-white" : "text-gray-800"}`}>
-                {rec.total}h
-              </p>
-            </div>
-          </div>
+          {rec.time_in === 'Absent' ? (
+            <div className="text-center text-red-500 font-semibold">Absent</div>
+          ) : (
+            <>
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
+                    Time In
+                  </p>
+                  <p className={`font-medium ${theme === "dark" ? "text-white" : "text-gray-800"}`}>
+                    {rec.time_in}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
+                    Time Out
+                  </p>
+                  <p className={`font-medium ${theme === "dark" ? "text-white" : "text-gray-800"}`}>
+                    {rec.time_out}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
+                    Regular
+                  </p>
+                  <p className={theme === "dark" ? "text-white" : "text-gray-800"}>{rec.regular}h</p>
+                </div>
+                <div>
+                  <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
+                    Overtime
+                  </p>
+                  <p className={theme === "dark" ? "text-white" : "text-gray-800"}>{rec.overtime}h</p>
+                </div>
+                <div>
+                  <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
+                    Total
+                  </p>
+                  <p className={`font-medium ${theme === "dark" ? "text-white" : "text-gray-800"}`}>
+                    {rec.total}h
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       ))}
     </div>

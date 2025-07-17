@@ -202,7 +202,7 @@ export default function AttendanceTable({
 
   return (
     <div className="w-full h-full flex flex-col">
-      <div className=" flex-grow">
+      <div className="flex-grow overflow-x-auto">
         <table
           className={`min-w-full divide-y ${
             theme === "dark" ? "divide-gray-700" : "divide-gray-200"

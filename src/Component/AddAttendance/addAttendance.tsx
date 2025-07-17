@@ -26,6 +26,7 @@ export default function AddAttendance() {
   const [overTime, setOverTime] = useState("");
   const [breaks, setBreaks] = useState<Break[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isAbsent, setIsAbsent] = useState(false);
 
   const { theme, toggleTheme } = useTheme();
 
@@ -54,14 +55,18 @@ export default function AddAttendance() {
   }, []);
 
   const handleSubmit = async () => {
-    if (!validateTimes(selectedEmployee, date, timeIn, timeOut, breaks, toast))
-      return;
-
-    if (overTime && overTime <= timeOut) {
-      toast.error("Overtime must be greater than time out.");
+    if (!selectedEmployee) {
+      toast.warning("Please select an employee");
       return;
     }
-
+    if (!isAbsent) {
+      if (!validateTimes(selectedEmployee, date, timeIn, timeOut, breaks, toast))
+        return;
+      if (overTime && overTime <= timeOut) {
+        toast.error("Overtime must be greater than time out.");
+        return;
+      }
+    }
     setLoading(true);
     try {
       const { data: existingRecords, error: fetchError } = await supabase
@@ -70,29 +75,27 @@ export default function AddAttendance() {
         .eq("employee_id", selectedEmployee)
         .eq("date", date)
         .limit(1);
-
       if (fetchError) throw fetchError;
-
-    
-
-      
+      if (existingRecords && existingRecords.length > 0) {
+        toast.error("Attendance for this employee and date already exists.");
+        setLoading(false);
+        return;
+      }
       const { data: attendanceData, error: attendanceError } = await supabase
         .from("attendance")
         .insert([
           {
             employee_id: selectedEmployee,
             date,
-            time_in: timeIn,
-            time_out: timeOut,
-            over_time: overTime || null,
+            time_in: isAbsent ? null : timeIn,
+            time_out: isAbsent ? null : timeOut,
+            over_time: isAbsent ? null : overTime || null,
+            status: isAbsent ? "absent" : "present",
           },
         ])
         .select();
-
       if (attendanceError) throw attendanceError;
-
-    
-      if (breaks.length > 0 && attendanceData?.[0]?.id) {
+      if (!isAbsent && breaks.length > 0 && attendanceData?.[0]?.id) {
         const { error: breaksError } = await supabase.from("breaks").insert(
           breaks.map((brk) => ({
             attendance_id: attendanceData[0].id,
@@ -100,11 +103,9 @@ export default function AddAttendance() {
             end_time: brk.end_time,
           }))
         );
-
         if (breaksError) throw breaksError;
       }
-
-      toast.success("Attendance added successfully!");
+      toast.success(isAbsent ? "Absent marked successfully!" : "Attendance added successfully!");
       resetForm();
     } catch (error: any) {
       console.error("Error adding attendance:", error);
@@ -121,6 +122,7 @@ export default function AddAttendance() {
     setTimeOut("");
     setOverTime("");
     setBreaks([]);
+    setIsAbsent(false);
   };
 
   return (
@@ -160,12 +162,26 @@ export default function AddAttendance() {
         theme={theme}
       />
 
+      <div className="mb-4 flex items-center">
+        <input
+          type="checkbox"
+          id="absent-checkbox"
+          checked={isAbsent}
+          onChange={() => setIsAbsent((prev) => !prev)}
+          disabled={loading}
+          className="mr-2"
+        />
+        <label htmlFor="absent-checkbox" className={theme === "dark" ? "text-gray-300" : "text-gray-700"}>
+          Mark as Absent
+        </label>
+      </div>
+
       <TimeInputGroup
         timeIn={timeIn}
         setTimeIn={setTimeIn}
         timeOut={timeOut}
         setTimeOut={setTimeOut}
-        loading={loading}
+        loading={loading || isAbsent}
         theme={theme}
       />
 
@@ -174,14 +190,14 @@ export default function AddAttendance() {
         setBreaks={setBreaks}
         timeIn={timeIn}
         timeOut={timeOut}
-        loading={loading}
+        loading={loading || isAbsent}
         theme={theme}
       />
 
       {/* <OvertimeInput
         overTime={overTime}
         setOverTime={setOverTime}
-        loading={loading}
+        loading={loading || isAbsent}
         theme={theme}
       /> */}
 

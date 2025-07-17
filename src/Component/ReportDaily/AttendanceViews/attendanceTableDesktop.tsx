@@ -16,13 +16,14 @@ interface Record {
   totalHours: number;
   breaks?: Break[];
   totalHoursWorked?: number;
+  status?: 'present' | 'absent'; 
 }
 
 interface Break {
   id: string;
   start_time: string;
   end_time: string;
-  attendance_id?: string; // Add this if your breaks table has this field
+  attendance_id?: string; 
 }
 
 interface Props {
@@ -68,84 +69,28 @@ export function AttendanceTableDesktop({ theme, records, formatHours }: Props) {
           {records.map((rec, idx) => (
             <tr
               key={`${rec.employeeName}-${idx}`}
-              className={`${
-                theme === "dark"
+              className={`
+                ${theme === "dark"
                   ? "border-gray-700 hover:bg-gray-800"
-                  : "border-gray-200 hover:bg-gray-50"
-              } border-b`}
+                  : "border-gray-200 hover:bg-gray-50"}
+                border-b`}
             >
-              <td
-                className={`border px-4 py-2 ${
-                  theme === "dark" ? "border-gray-700" : "border-gray-300"
-                }`}
-              >
-                {rec.employeeName}
-              </td>
-              <td
-                className={`border px-4 py-2 ${
-                  theme === "dark" ? "border-gray-700" : "border-gray-300"
-                }`}
-              >
-                {rec.time_in || "—"}
-              </td>
-              <td
-                className={`border px-4 py-2 ${
-                  theme === "dark" ? "border-gray-700" : "border-gray-300"
-                }`}
-              >
-                {rec.time_out || "—"}
-              </td>
-              <td
-                className={`border px-4 py-2 ${
-                  theme === "dark" ? "border-gray-700" : "border-gray-300"
-                }`}
-              >
-                {rec.breaks?.length ? (
-                  <div className="space-y-1">
-                    {rec.breaks.map((br) => (
-                      <div key={br.id}>
-                        {br.start_time} - {br.end_time}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  "—"
-                )}
-              </td>
-              <td
-                className={`border px-4 py-2 ${
-                  theme === "dark" ? "border-gray-700" : "border-gray-300"
-                }`}
-              >
-                {rec.breaks?.length
-                  ? formatMinutesToTime(calculateTotalBreakMinutes(rec.breaks))
-                  : "—"}
-              </td>
-              <td
-                className={`border px-4 py-2 ${
-                  theme === "dark" ? "border-gray-700" : "border-gray-300"
-                }`}
-              >
-                {formatHours(rec.regularHours)}
-                
-              </td>
-              <td
-                className={`border px-4 py-2 ${
-                  theme === "dark" ? "border-gray-700" : "border-gray-300"
-                }`}
-              >
-                {typeof rec.overtimeHours === "number"
-                  ? formatHours(rec.overtimeHours)
-                  : "—"}
-              </td>
-
-              <td
-                className={`border px-4 py-2 ${
-                  theme === "dark" ? "border-gray-700" : "border-gray-300"
-                }`}
-              >
-                {formatHours(rec.totalHours)}
-              </td>
+              <td className={`border px-4 py-2 ${theme === "dark" ? "border-gray-700" : "border-gray-300"}`}>{rec.employeeName}</td>
+              {rec.status === 'absent' ? (
+                <>
+                  <td colSpan={7} className={`border px-4 py-2 text-center font-semibold ${theme === "dark" ? "border-gray-700 text-red-400" : "border-gray-300 text-red-600"}`}>Absent</td>
+                </>
+              ) : (
+                <>
+                  <td className={`border px-4 py-2 ${theme === "dark" ? "border-gray-700" : "border-gray-300"}`}>{rec.time_in || "—"}</td>
+                  <td className={`border px-4 py-2 ${theme === "dark" ? "border-gray-700" : "border-gray-300"}`}>{rec.time_out || "—"}</td>
+                  <td className={`border px-4 py-2 ${theme === "dark" ? "border-gray-700" : "border-gray-300"}`}>{rec.breaks?.length ? (<div className="space-y-1">{rec.breaks.map((br) => (<div key={br.id}>{br.start_time} - {br.end_time}</div>))}</div>) : ("—")}</td>
+                  <td className={`border px-4 py-2 ${theme === "dark" ? "border-gray-700" : "border-gray-300"}`}>{rec.breaks?.length ? formatMinutesToTime(calculateTotalBreakMinutes(rec.breaks)) : "—"}</td>
+                  <td className={`border px-4 py-2 ${theme === "dark" ? "border-gray-700" : "border-gray-300"}`}>{formatHours(rec.regularHours)}</td>
+                  <td className={`border px-4 py-2 ${theme === "dark" ? "border-gray-700" : "border-gray-300"}`}>{typeof rec.overtimeHours === "number" ? formatHours(rec.overtimeHours) : "—"}</td>
+                  <td className={`border px-4 py-2 ${theme === "dark" ? "border-gray-700" : "border-gray-300"}`}>{formatHours(typeof rec.totalHoursWorked === 'number' ? rec.totalHoursWorked : rec.totalHours)}</td>
+                </>
+              )}
             </tr>
           ))}
         </tbody>

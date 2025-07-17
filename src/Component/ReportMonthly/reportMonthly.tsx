@@ -10,6 +10,8 @@ import AttendanceTable from "./attendanceTable";
 import AttendanceListMobile from "./attendanceListMobile";
 import ThemeToggle from "../../shared/ThemeToggle";
 import { FaCalendarDays } from "react-icons/fa6";
+import { calculateTotalBreakMinutes } from "../../Utils/timeHelper";
+import { calculateHours } from "../../Utils/reportHelper";
 
 interface AttendanceRecord {
   id: string;
@@ -18,6 +20,8 @@ interface AttendanceRecord {
   time_in: string | null;
   time_out: string | null;
   over_time: string | null;
+  status: string; // Added status field
+  breaks?: { id: string; start_time: string; end_time: string }[];
 }
 
 interface MonthlyGroupedRecord {
@@ -58,14 +62,10 @@ export default function MonthlyAttendanceReport() {
     async function fetchAttendance() {
       const { data, error } = await supabase
         .from("attendance")
-        .select("*")
+        .select("*, breaks(*)")
         .order("date", { ascending: true });
       if (error) return console.error("Error fetching attendance:", error);
-     const nonEmptyData = (data || []).filter(
-  (rec) => rec.time_in !== null || rec.time_out !== null || rec.over_time !== null
-);
-setAttendance(nonEmptyData);
-
+      setAttendance(data || []);
     }
     fetchAttendance();
   }, []);
@@ -76,99 +76,86 @@ setAttendance(nonEmptyData);
     }
   }, [attendance, employeeMap]);
 
-  const calculateHours = (
-    dateStr: string,
-    inTime: string | null,
-    outTime: string | null,
-    overTimeStr: string | null
-  ) => {
-    if (!inTime || !outTime) return { regular: 0, overtime: 0 };
-    try {
-      const baseDate = new Date(dateStr);
-      let inDate = parse(inTime, "HH:mm:ss", baseDate);
-      let outDate = parse(outTime, "HH:mm:ss", baseDate);
-      if (outDate < inDate) outDate = addDays(outDate, 1);
-      let totalMinutes = differenceInMinutes(outDate, inDate);
-      if (totalMinutes > 720) totalMinutes = 720;
-      let overtimeMinutes = 0;
-      if (overTimeStr) {
-        let overTimeEnd = parse(overTimeStr, "HH:mm:ss", baseDate);
-        if (overTimeEnd < outDate) overTimeEnd = addDays(overTimeEnd, 1);
-        overtimeMinutes = differenceInMinutes(overTimeEnd, outDate);
-        if (overtimeMinutes < 0) overtimeMinutes = 0;
-      }
-      return {
-        regular: parseFloat((totalMinutes / 60).toFixed(2)),
-        overtime: parseFloat((overtimeMinutes / 60).toFixed(2)),
-      };
-    } catch {
-      return { regular: 0, overtime: 0 };
-    }
-  };
-
   const groupByMonth = (): MonthlyGroupedRecord[] => {
-  const grouped: Record<string, MonthlyGroupedRecord> = {};
-  const allMonths = new Set<string>();
-
- 
-  attendance.forEach((rec) => {
-    const month = format(new Date(rec.date), "yyyy-MM");
-    allMonths.add(month);
-  });
-
-  allMonths.forEach((month) => {
-    const records: MonthlyGroupedRecord["records"] = [];
-
-    
-    employeeMap.forEach((emp, empId) => {
-     
-      const employeeRecs = attendance.filter((rec) => {
-        return (
-          rec.employee_id === empId &&
-          format(new Date(rec.date), "yyyy-MM") === month
-        );
-      });
-
-      if (employeeRecs.length > 0) {
-        employeeRecs.forEach((rec) => {
-          const { regular, overtime } = calculateHours(
-            rec.date,
-            rec.time_in,
-            rec.time_out,
-            rec.over_time
-          );
-
-          records.push({
-            date: format(new Date(rec.date), "dd/MM/yyyy"),
-            employeeName: `${emp.first_name} ${emp.last_name}`,
-            time_in: rec.time_in || "__",
-            time_out: rec.time_out || "__",
-            regular,
-            overtime,
-            total: parseFloat((regular + overtime).toFixed(2)),
-          });
-        });
-      } else {
-
-        records.push({
-          date: "__/__/____",
-          employeeName: `${emp.first_name} ${emp.last_name}`,
-          time_in: "__",
-          time_out: "__",
-          regular: 0,
-          overtime: 0,
-          total: 0,
-        });
-      }
+    const grouped: Record<string, MonthlyGroupedRecord> = {};
+    const allMonths = new Set<string>();
+    attendance.forEach((rec) => {
+      const month = format(new Date(rec.date), "yyyy-MM");
+      allMonths.add(month);
     });
-
-    grouped[month] = { month, records };
-  });
-
-  return Object.values(grouped).sort(
-    (a, b) => new Date(b.month).getTime() - new Date(a.month).getTime()
-  );
-};
+    allMonths.forEach((month) => {
+      let records: (MonthlyGroupedRecord["records"][number] & { rawDate?: Date })[] = [];
+      employeeMap.forEach((emp, empId) => {
+        const employeeRecs = attendance.filter((rec) => {
+          return (
+            rec.employee_id === empId &&
+            format(new Date(rec.date), "yyyy-MM") === month
+          );
+        });
+        if (employeeRecs.length > 0) {
+          employeeRecs.forEach((rec) => {
+            if (rec.status === 'absent') {
+              records.push({
+                date: format(new Date(rec.date), "dd/MM/yyyy"),
+                employeeName: `${emp.first_name} ${emp.last_name}`,
+                time_in: 'Absent',
+                time_out: 'Absent',
+                regular: 0,
+                overtime: 0,
+                total: 0,
+                rawDate: new Date(rec.date),
+              });
+            } else {
+              const breaks = rec.breaks || [];
+              const totalBreaks = calculateTotalBreakMinutes(breaks);
+              const { regularHours, overtimeHours, totalHoursWorked } = calculateHours(
+                rec.date,
+                rec.time_in,
+                rec.time_out,
+                totalBreaks
+              );
+              records.push({
+                date: format(new Date(rec.date), "dd/MM/yyyy"),
+                employeeName: `${emp.first_name} ${emp.last_name}`,
+                time_in: rec.time_in || "__",
+                time_out: rec.time_out || "__",
+                regular: regularHours,
+                overtime: overtimeHours,
+                total: totalHoursWorked,
+                rawDate: new Date(rec.date),
+              });
+            }
+          });
+        } else {
+          records.push({
+            date: "__/__/____",
+            employeeName: `${emp.first_name} ${emp.last_name}`,
+            time_in: "__",
+            time_out: "__",
+            regular: 0,
+            overtime: 0,
+            total: 0,
+            rawDate: undefined,
+          });
+        }
+      });
+      // Sort records by rawDate, putting undefined (no date) at the end
+      records = records.sort((a, b) => {
+        if (!a.rawDate && !b.rawDate) return 0;
+        if (!a.rawDate) return 1;
+        if (!b.rawDate) return -1;
+        return a.rawDate.getTime() - b.rawDate.getTime();
+      });
+      // Remove rawDate before assigning
+      grouped[month] = {
+        month,
+        records: records.map(({ rawDate, ...rest }) => rest),
+      };
+    });
+    return Object.values(grouped).sort(
+      (a, b) => new Date(b.month).getTime() - new Date(a.month).getTime()
+    );
+  };
 
   const currentMonthData = groupedMonthlyData.find(
     (monthData) => monthData.month === format(selectedMonth, "yyyy-MM")
@@ -178,6 +165,15 @@ setAttendance(nonEmptyData);
     currentMonthData?.records.filter((rec) =>
       rec.employeeName.toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
+
+  // Group records by employee and sum total hours
+  const employeeMonthlyTotals: Record<string, number> = {};
+  filteredRecords.forEach((rec) => {
+    if (!employeeMonthlyTotals[rec.employeeName]) {
+      employeeMonthlyTotals[rec.employeeName] = 0;
+    }
+    employeeMonthlyTotals[rec.employeeName] += rec.total;
+  });
 
   return (
     <div
@@ -239,7 +235,11 @@ setAttendance(nonEmptyData);
           </p>
         ) : (
           <>
-            <AttendanceTable records={filteredRecords} theme={theme} />
+            <AttendanceTable
+              records={filteredRecords}
+              theme={theme}
+              employeeMonthlyTotals={employeeMonthlyTotals}
+            />
             <AttendanceListMobile records={filteredRecords} theme={theme} />
           </>
         )}

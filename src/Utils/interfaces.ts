@@ -17,7 +17,7 @@ export interface AttendanceRecord {
   time_out: string | null;
   over_time:string | null;
     breaks?: Break[];
-    
+    status?: 'present' | 'absent';
 }
 export interface DailyGrouped {
   date: string;
@@ -31,12 +31,14 @@ export interface DailyGrouped {
     time_out: string | null;
     over_time: string | null;
     breaks?: Break[];
+    status?: 'present' | 'absent';
   }[];
 }
 
 export interface AttendanceWithEmployee extends AttendanceRecord {
   breaks?: Break[];
   employeeName: string;
+  status?: 'present' | 'absent';
 }
 export interface Break {
   id: string;

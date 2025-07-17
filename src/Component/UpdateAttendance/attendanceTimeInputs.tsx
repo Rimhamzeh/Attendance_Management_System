@@ -5,8 +5,8 @@ interface AttendanceTimeInputsProps {
   inputs: { time_in: string; time_out: string; over_time: string };
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onClear: (field: keyof AttendanceTimeInputsProps["inputs"]) => void;
-
   theme: string;
+  disabled?: boolean;
 }
 
 export default function AttendanceTimeInputs({
@@ -14,6 +14,7 @@ export default function AttendanceTimeInputs({
   onChange,
   onClear,
   theme,
+  disabled = false,
 }: AttendanceTimeInputsProps) {
   const inputClass = `w-full px-3 py-2 pr-10 rounded border transition-colors ${
     theme === "dark"
@@ -44,8 +45,9 @@ export default function AttendanceTimeInputs({
               value={inputs[field]}
               onChange={onChange}
               placeholder="HH:MM"
+              disabled={disabled}
             />
-            {inputs[field] && (
+            {inputs[field] && !disabled && (
               <button
                 type="button"
                 onClick={() => onClear(field)}

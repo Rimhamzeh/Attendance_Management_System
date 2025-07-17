@@ -32,6 +32,7 @@ export default function UpdateAttendance({
     over_time: "",
   });
   const [breaks, setBreaks] = useState<Break[]>([]);
+  const [isAbsent, setIsAbsent] = useState(record.status === 'absent');
 
   const [isAddingBreak, setIsAddingBreak] = useState(false);
   const [newBreak, setNewBreak] = useState({ start: "", end: "" });
@@ -62,6 +63,7 @@ export default function UpdateAttendance({
         time_out: formatTime(record.time_out),
         over_time: record.over_time || "",
       });
+      setIsAbsent(record.status === 'absent');
     }
   }, [record]);
 
@@ -286,66 +288,53 @@ export default function UpdateAttendance({
   };
 
   const handleUpdate = async () => {
-    const formattedInputs = {
-      time_in: inputs.time_in ? utils.ensureTimeFormat(inputs.time_in) : null,
-      time_out: inputs.time_out
-        ? utils.ensureTimeFormat(inputs.time_out)
-        : null,
-      over_time: inputs.over_time
-        ? utils.ensureTimeFormat(inputs.over_time)
-        : null,
-    };
-
-    if (
-      formattedInputs.time_in &&
-      formattedInputs.time_out &&
-      utils.toMinutes(formattedInputs.time_out) <=
-        utils.toMinutes(formattedInputs.time_in)
-    ) {
-      await Swal.fire({
-        text: "Time out must be after time in.",
-        icon: "warning",
-      });
-      return;
+    let formattedInputs: any;
+    if (isAbsent) {
+      formattedInputs = {
+        time_in: null,
+        time_out: null,
+        over_time: null,
+        status: 'absent',
+      };
+    } else {
+      formattedInputs = {
+        time_in: inputs.time_in ? utils.ensureTimeFormat(inputs.time_in) : null,
+        time_out: inputs.time_out ? utils.ensureTimeFormat(inputs.time_out) : null,
+        over_time: inputs.over_time ? utils.ensureTimeFormat(inputs.over_time) : null,
+        status: 'present',
+      };
     }
 
-    if (
-      formattedInputs.over_time &&
-      formattedInputs.time_out &&
-      utils.toMinutes(formattedInputs.over_time) <
-        utils.toMinutes(formattedInputs.time_out)
-    ) {
-      await Swal.fire({
-        text: "Overtime must be after time out.",
-        icon: "warning",
-      });
-      return;
-    }
-
-    const timeInM = formattedInputs.time_in
-      ? utils.toMinutes(formattedInputs.time_in)
-      : null;
-    const timeOutM = formattedInputs.time_out
-      ? utils.toMinutes(formattedInputs.time_out)
-      : null;
-
-    if (timeInM === null || timeOutM === null) {
-      await Swal.fire({
-        text: "Time In and Time Out must be set.",
-        icon: "warning",
-      });
-      return;
-    }
-
-    for (const br of breaks) {
-      const brStartM = utils.toMinutes(br.start_time);
-      const brEndM = utils.toMinutes(br.end_time);
-      if (brStartM < timeInM || brEndM > timeOutM) {
-        await Swal.fire({
-          text: "One or more breaks are outside the attendance time range.",
-          icon: "warning",
-        });
+    if (!isAbsent) {
+      if (
+        formattedInputs.time_in &&
+        formattedInputs.time_out &&
+        utils.toMinutes(formattedInputs.time_out) <= utils.toMinutes(formattedInputs.time_in)
+      ) {
+        await Swal.fire({ text: "Time out must be after time in.", icon: "warning" });
         return;
+      }
+      if (
+        formattedInputs.over_time &&
+        formattedInputs.time_out &&
+        utils.toMinutes(formattedInputs.over_time) < utils.toMinutes(formattedInputs.time_out)
+      ) {
+        await Swal.fire({ text: "Overtime must be after time out.", icon: "warning" });
+        return;
+      }
+      const timeInM = formattedInputs.time_in ? utils.toMinutes(formattedInputs.time_in) : null;
+      const timeOutM = formattedInputs.time_out ? utils.toMinutes(formattedInputs.time_out) : null;
+      if (timeInM === null || timeOutM === null) {
+        await Swal.fire({ text: "Time In and Time Out must be set.", icon: "warning" });
+        return;
+      }
+      for (const br of breaks) {
+        const brStartM = utils.toMinutes(br.start_time);
+        const brEndM = utils.toMinutes(br.end_time);
+        if (brStartM < timeInM || brEndM > timeOutM) {
+          await Swal.fire({ text: "One or more breaks are outside the attendance time range.", icon: "warning" });
+          return;
+        }
       }
     }
 
@@ -363,7 +352,7 @@ export default function UpdateAttendance({
       return;
     }
 
-    const updatedRecord = { ...record, ...formattedInputs };
+    const updatedRecord = { ...record, ...formattedInputs, status: isAbsent ? 'absent' : 'present' };
     onSaved(updatedRecord);
     onClose();
   };
@@ -384,19 +373,31 @@ export default function UpdateAttendance({
         </button>
       </div>
 
-      
+      <div className="flex items-center mb-4">
+        <input
+          type="checkbox"
+          id="absent-checkbox"
+          checked={isAbsent}
+          onChange={() => setIsAbsent((prev) => !prev)}
+          className="mr-2"
+        />
+        <label htmlFor="absent-checkbox" className={theme === "dark" ? "text-gray-300" : "text-gray-700"}>
+          Mark as Absent
+        </label>
+      </div>
       <AttendanceTimeInputs
         inputs={inputs}
         onChange={handleInputChange}
         onClear={handleClearInput}
         theme={theme}
+        disabled={isAbsent}
       />
 
  
       <div className="mt-6">
         <div className="flex justify-between items-center mb-3">
           <h4 className="font-semibold">Breaks</h4>
-          {!isAddingBreak && editingBreakId === null && (
+          {!isAddingBreak && editingBreakId === null && !isAbsent && (
             <button
               className="flex items-center gap-1 px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
               onClick={() => setIsAddingBreak(true)}
@@ -417,7 +418,7 @@ export default function UpdateAttendance({
           formatTimeDisplay={utils.formatTimeDisplay}
         />
 
-        {isAddingBreak && (
+        {isAddingBreak && !isAbsent && (
           <BreakForm
             breakData={newBreak}
             onChange={handleBreakChange}
@@ -431,7 +432,7 @@ export default function UpdateAttendance({
           />
         )}
 
-        {editingBreakId && (
+        {editingBreakId && !isAbsent && (
           <BreakForm
             breakData={editedBreak}
             onChange={handleBreakChange}

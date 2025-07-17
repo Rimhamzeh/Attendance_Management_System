@@ -109,6 +109,7 @@ export default function AttendanceSummaryTable() {
           time_in: record?.time_in || null,
           time_out: record?.time_out || null,
           over_time: record?.over_time || null,
+          status: (record?.status === 'absent' ? 'absent' : record?.status === 'present' ? 'present' : undefined) as 'present' | 'absent' | undefined,
         };
       });
       setAttendanceByDate((prev) => ({ ...prev, [dateStr]: combined }));
@@ -136,6 +137,7 @@ export default function AttendanceSummaryTable() {
           latestOut: rec.time_out,
           overtime: rec.over_time,
           breaks: rec.breaks || [],
+          status: rec.status, // preserve status
         };
       } else {
         if (
@@ -161,6 +163,9 @@ export default function AttendanceSummaryTable() {
             ...rec.breaks,
           ];
         }
+        if (rec.status === 'absent') {
+          employeeTimes[employeeName].status = 'absent';
+        }
       }
     });
 
@@ -184,7 +189,8 @@ export default function AttendanceSummaryTable() {
           time_in: times.earliestIn,
           time_out: times.latestOut,
           over_time: times.overtime,
-          breaks: times.breaks || [], 
+          breaks: times.breaks || [],
+          status: (times.status === 'absent' ? 'absent' : times.status === 'present' ? 'present' : undefined) as 'present' | 'absent' | undefined,
         };
       }
     );
@@ -306,7 +312,7 @@ export default function AttendanceSummaryTable() {
           />
           <AttendanceTableDesktop
             theme={theme}
-            records={filteredRecords}
+            records={filteredRecords }
             formatHours={formatHours}
           />
         </>
