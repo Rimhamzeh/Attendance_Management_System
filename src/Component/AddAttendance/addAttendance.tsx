@@ -76,11 +76,11 @@ export default function AddAttendance() {
         .eq("date", date)
         .limit(1);
       if (fetchError) throw fetchError;
-      if (existingRecords && existingRecords.length > 0) {
-        toast.error("Attendance for this employee and date already exists.");
-        setLoading(false);
-        return;
-      }
+      // if (existingRecords && existingRecords.length > 0) {
+      //   toast.error("Attendance for this employee and date already exists.");
+      //   setLoading(false);
+      //   return;
+      // }
       const { data: attendanceData, error: attendanceError } = await supabase
         .from("attendance")
         .insert([
