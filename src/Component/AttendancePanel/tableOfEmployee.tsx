@@ -75,10 +75,8 @@ export default function EmployeePage() {
     <UpdateAttendance
       record={editingRecord}
       onClose={() => setEditingRecord(null)}
-      onSaved={(updatedRecord) => {
-        setRecords((prev) =>
-          prev.map((r) => (r.id === updatedRecord.id ? updatedRecord : r))
-        );
+      onSaved={async (updatedRecord) => {
+        await fetchData(); // Best practice: re-fetch all attendance data after update
         setEditingRecord(null);
       }}
       theme={theme}
