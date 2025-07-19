@@ -21,7 +21,7 @@ interface AttendanceRecord {
   time_in: string | null;
   time_out: string | null;
   over_time: string | null;
-  status: string; // Added status field
+  status: string; 
   breaks?: { id: string; start_time: string; end_time: string }[];
 }
 
@@ -140,14 +140,14 @@ export default function MonthlyAttendanceReport() {
           });
         }
       });
-      // Sort records by rawDate, putting undefined (no date) at the end
+     
       records = records.sort((a, b) => {
         if (!a.rawDate && !b.rawDate) return 0;
         if (!a.rawDate) return 1;
         if (!b.rawDate) return -1;
         return a.rawDate.getTime() - b.rawDate.getTime();
       });
-      // Remove rawDate before assigning
+      
       grouped[month] = {
         month,
         records: records.map(({ rawDate, ...rest }) => rest),
@@ -167,7 +167,7 @@ export default function MonthlyAttendanceReport() {
       rec.employeeName.toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
 
-  // Group records by employee and sum total hours
+ 
   const employeeMonthlyTotals: Record<string, number> = {};
   filteredRecords.forEach((rec) => {
     if (!employeeMonthlyTotals[rec.employeeName]) {

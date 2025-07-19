@@ -81,12 +81,12 @@ export default function UpdateAttendance({
     if (editingBreakId) {
       setEditedBreak((prev) => ({
         ...prev,
-        [field]: value, // Use the raw value
+        [field]: value, 
       }));
     } else {
       setNewBreak((prev) => ({
         ...prev,
-        [field]: value, // Use the raw value
+        [field]: value, 
       }));
     }
   };

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Swal from "sweetalert2";  // import SweetAlert2
+import Swal from "sweetalert2";  
 import type { Break } from "../../../Utils/interfaces";
 
 interface Props {
@@ -22,7 +22,7 @@ export default function BreaksSection({
   const [isAddingBreak, setIsAddingBreak] = useState(false);
   const [newBreak, setNewBreak] = useState({ start: "", end: "" });
 
-  // Helper to compare times in "HH:mm" format
+  
   const isTimeBefore = (a: string, b: string) => a < b;
 
   const handleSave = () => {
@@ -43,7 +43,7 @@ export default function BreaksSection({
       return;
     }
 
-    // Check if break is within timeIn and timeOut
+
     if (newBreak.start < timeIn || newBreak.end > timeOut) {
       Swal.fire({
         icon: "error",
@@ -53,10 +53,10 @@ export default function BreaksSection({
       return;
     }
 
-    // Optional: Check overlap with existing breaks
+    
     const overlaps = breaks.some((brk) => {
       return (
-        // Overlap if newBreak.start < brk.end_time AND newBreak.end > brk.start_time
+        
         newBreak.start < brk.end_time && newBreak.end > brk.start_time
       );
     });
@@ -74,7 +74,7 @@ export default function BreaksSection({
       {
         start_time: newBreak.start,
         end_time: newBreak.end,
-        id: "", // adjust as needed
+        id: "", 
       },
     ]);
 

@@ -75,7 +75,7 @@ export default function AttendanceSummaryTable() {
       const dateStr = format(selectedDate, "yyyy-MM-dd");
       if (attendanceByDate[dateStr]) return;
 
-      // Step 1: Fetch all employees
+     
       const { data: employees, error: empError } = await supabase
         .from("employee")
         .select("id, first_name, last_name");
@@ -85,7 +85,7 @@ export default function AttendanceSummaryTable() {
         return;
       }
 
-      // Step 2: Fetch attendance with breaks for selected date
+      
       const { data: attendance, error: attError } = await supabase
         .from("attendance")
         .select("*, breaks(*), employee(id, first_name, last_name)")
@@ -96,7 +96,7 @@ export default function AttendanceSummaryTable() {
         return;
       }
 
-      // Step 3: Merge employees with attendance
+     
       const combined = employees.map((emp) => {
         const record = attendance?.find((att) => att.employee?.id === emp.id);
         
@@ -104,7 +104,7 @@ export default function AttendanceSummaryTable() {
 
         return {
           employeeName: `${emp.first_name} ${emp.last_name}`,
-          ...record, // If attendance exists, spread its properties
+          ...record,
           breaks: record?.breaks || [],
           time_in: record?.time_in || null,
           time_out: record?.time_out || null,
@@ -137,7 +137,7 @@ export default function AttendanceSummaryTable() {
           latestOut: rec.time_out,
           overtime: rec.over_time,
           breaks: rec.breaks || [],
-          status: rec.status, // preserve status
+          status: rec.status, 
         };
       } else {
         if (
@@ -204,7 +204,7 @@ export default function AttendanceSummaryTable() {
     [groupedData, searchTerm]
   );
 
-  // Group records by employee and sum total hours for the selected day
+  
   const employeeMonthlyTotals: Record<string, number> = {};
   filteredRecords.forEach((rec) => {
     if (!employeeMonthlyTotals[rec.employeeName]) {
@@ -262,11 +262,11 @@ export default function AttendanceSummaryTable() {
         {isCalendarOpen && (
           <div
             className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-            onClick={() => setIsCalendarOpen(false)} // Close modal on clicking outside calendar box
+            onClick={() => setIsCalendarOpen(false)} 
           >
             <div
               className="bg-white rounded-lg shadow-lg p-6 relative max-w-md w-full"
-              onClick={(e) => e.stopPropagation()} // Prevent modal close when clicking inside calendar
+              onClick={(e) => e.stopPropagation()}
             >
               <button
                 onClick={() => setIsCalendarOpen(false)}
@@ -284,7 +284,7 @@ export default function AttendanceSummaryTable() {
                 onNextMonth={handleNextMonth}
                 onDateSelect={(day) => {
                   handleDateSelect(day);
-                  setIsCalendarOpen(false); // Close modal on date select
+                  setIsCalendarOpen(false);
                 }}
                 hasAttendanceData={(day) =>
                   availableDates.some((date) => isSameDay(date, day))

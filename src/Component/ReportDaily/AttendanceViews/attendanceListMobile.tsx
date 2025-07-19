@@ -20,7 +20,7 @@ interface Record {
   overtimeHours: number;
   totalHours: number;
   breaks?: Break[];
-  status?: string; // Added status to the Record interface
+  status?: string;
 }
 
 interface Props {

@@ -76,7 +76,7 @@ export default function EmployeePage() {
       record={editingRecord}
       onClose={() => setEditingRecord(null)}
       onSaved={async (updatedRecord) => {
-        await fetchData(); // Best practice: re-fetch all attendance data after update
+        await fetchData(); 
         setEditingRecord(null);
       }}
       theme={theme}

@@ -28,17 +28,6 @@ export function useAttendanceData() {
       const attendedIds = new Set(attendanceData?.map(a => a.employee_id));
       const missingAttendance = employeesData?.filter(emp => !attendedIds.has(emp.id)) || [];
 
-      // Removed automatic attendance insertion for missing employees
-      // if (missingAttendance.length > 0) {
-      //   const insertData = missingAttendance.map(emp => ({
-      //     employee_id: emp.id,
-      //     date: todayDate,
-      //     time_in: null,
-      //     time_out: null,
-      //   }));
-      //   const { error: insertError } = await supabase.from("attendance").insert(insertData);
-      //   if (insertError) throw new Error(insertError.message);
-      // }
 
     
       const { data: updatedAttendanceData, error: updatedAttendanceError } = await supabase
